@@ -1,0 +1,19 @@
+
+<ul class="users"> 
+    <li *ngFor="let user of users" (click)="onSelect(user)">
+        {{user.username}}
+    </li>
+</ul>
+
+<div *ngIf="selectedUser" class="selected">
+  <h2>Actions</h2>
+  <div><span>username: </span>{{selectedUser.username}}</div>
+  <div>
+    <label>send private message:
+      <div>
+      <input [(ngModel)]="message" placeholder="message content"/>
+      <button (click)="send()">Send</button>
+    </div>
+    </label>
+  </div>
+</div>
