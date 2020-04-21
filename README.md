@@ -4,7 +4,8 @@ Zadatak iz predmeta Agentske tehnologije
 Klijent-server aplikacija za chat koje predstavlja agentsko okruženje implemetirana upotrebom JEE platforme.
 
 Frontend:
-Koriscen je Angular 6
+<br>
+Tehnologija: Angular 6
 <br>
 Pokretanje:
 <br>
