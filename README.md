@@ -10,6 +10,6 @@ Pokretanje:
 <br>
 -npm start u terminalu projekta
 <br>
--odlazak na localhost/4200 u pretrazivaču
+-odlazak na localhost/4200 u pretraživaču
 
 Autor:Tamara Lazarević
