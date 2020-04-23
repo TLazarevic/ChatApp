@@ -12,10 +12,15 @@ Pokretanje:
 -npm start u terminalu projekta
 <br>
 -odlazak na localhost/4200 u pretraživaču
+-registrovati i prijaviti se na proizvoljnog korisnika
+-spisak korisnika je na početnoj stranici
+-poruka se šalje iz dijaloga koji se otvara odabirom korisnika sa spiska
+-poruka svim korisnicima šalje se iz toolbar trake
+-pregled poruka vrši se iz toolbar trake
 
 Backend:
 <br>
-Da bi zahtevi funkcionisali potrebno je izmeniti sledeće sekcije standalone fajla WildFly servera:
+Ukoliko dodje do problema u pretrazivacu, da bi zahtevi funkcionisali potrebno je izmeniti sledeće sekcije standalone fajla WildFly servera:
 ```
  <host name="default-host" alias="localhost">
             <location name="/" handler="welcome-content"/>
