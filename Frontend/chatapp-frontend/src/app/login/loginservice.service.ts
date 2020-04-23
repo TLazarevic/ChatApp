@@ -17,7 +17,6 @@ export class LoginserviceService {
   };
 
 
-  
   constructor(private http: HttpClient) { }
 
   login(username:String,password:String): Observable<User>{
@@ -27,5 +26,11 @@ export class LoginserviceService {
     var userJSON=JSON.stringify(user)
 
     return this.http.post<User>('http://localhost:8080/ChatAppWar/rest/users/login', userJSON, this.httpOptionsText)
+  }
+
+  logout(): Observable<String>{
+   var res=this.http.delete<String>('http://localhost:8080/ChatAppWar/rest/users/loggedIn/'+this.loggedInUser.username,{ responseType: "text" as "json"})
+   this.loggedInUser=null;
+    return res;
   }
 }

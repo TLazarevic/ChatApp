@@ -43,4 +43,8 @@ export class NavbarComponent implements OnInit {
     this.message.author = new User();
   }
 
+  logout(){
+    this.loginservice.logout().subscribe(data=>
+      console.log(data))
+  }
 }
