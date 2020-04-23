@@ -13,5 +13,8 @@
 			<attribute name="owner.project.facets" value="java"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/HP/Downloads/jackson-annotations-2.11.0.rc1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/HP/Downloads/jackson-core-2.11.0.rc1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/HP/Downloads/jackson-databind-2.11.0.rc1.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

@@ -37,13 +37,6 @@ public class ChatBean {
 		return "ok";
 	}
 	
-	public void login() {
-		
-	}
-	
-	public void logout() {
-		
-	}
 	
 	
 	@POST
