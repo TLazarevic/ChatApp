@@ -1,0 +1,12 @@
+<h1 mat-dialog-title>Send Message</h1>
+<div mat-dialog-content>
+  <p>To: {{data.user.username}}</p>
+  <mat-form-field>
+    <mat-label>Message content:</mat-label>
+    <input matInput [(ngModel)]="data.message">
+  </mat-form-field>
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="onNoClick()">Cancel</button>
+  <button mat-button [mat-dialog-close]="data.message" >Send</button>
+</div>

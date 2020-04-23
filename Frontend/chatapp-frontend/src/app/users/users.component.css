@@ -1,3 +1,5 @@
+
+
 .users {
     margin: 0 0 2em 0;
     list-style-type: none;
@@ -43,5 +45,20 @@
   }
 
   .selected{
-      width: 15em;
+    margin: -10em 0 0 20em;
+    width: 15em;
+    background-color: rgba(255,255,255,0.5);
+  }
+
+  input{
+     font-family: SourceSansPro-Bold;
+  font-size: 16px;
+  color: #4b2354;
+  line-height: 1.2;
+
+  display: block;
+  width: 14.5em;
+  height: 62px;
+  background: transparent;
+
   }

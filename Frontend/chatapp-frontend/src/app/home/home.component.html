@@ -1,4 +1,5 @@
 
+
 <div class="mat-app-background basic-container">
     <app-navbar></app-navbar>
   </div>
@@ -7,22 +8,37 @@
    <header class="masthead">
     <div class="container h-100">
         <div class="row h-100 align-items-center justify-content-center text-center">
-            <div class="col-lg-10 align-self-end">
-                <h1 class="text-uppercase text-white font-weight-bold">BuzzR is an online chat app</h1>
+            <div class="col-lg-10 align-self-end" *ngIf="!isLoggedin">
+                <h1 class="text-uppercase text-white font-weight-bold"   >BuzzR is an online chat app</h1>
                 <hr class="divider my-4" />
             </div>
-            <div class="col-lg-8 align-self-baseline">
-                <p class="text-white-75 font-weight-light mb-5">Login or Signup and start BuzzN!</p>
-                <a class="btn btn-primary btn-xl js-scroll-trigger" routerLink="/login" routerLinkActive="active">login</a>
-                <a class="btn btn-primary btn-xl js-scroll-trigger" routerLink="/signup">signup</a>
+            <div class="col-lg-8 align-self-baseline"  >
+                
+                <div *ngIf = "isLoaded">
+
+                    <div *ngIf="isLoggedin" class="users1">
+                        <p>Users Online:</p>
+                        <app-users [users]="usersLogged"></app-users>
+                    </div>
+
+                    <div *ngIf="isLoggedin" class="users2">
+                        <p >All users:</p>
+                        <app-users [users]="usersRegistered"></app-users>
+                    </div>
+
+                </div>
+
+                <div *ngIf="!isLoggedin">
+                    <p class="text-white-75 font-weight-light mb-5">Login or Signup and start BuzzN!</p>
+                    <a class="btn btn-primary btn-xl js-scroll-trigger" routerLink="/login" routerLinkActive="active">login</a>
+                    <a class="btn btn-primary btn-xl js-scroll-trigger" routerLink="/signup">signup</a>
+                </div>
+
             </div>
         </div>
     </div>
 </header>
 
-<div *ngIf="loggedInUser">
-    <app-users></app-users>
-</div>
 
 <div>
   Icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon"> www.flaticon.com</a>
