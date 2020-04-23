@@ -12,11 +12,17 @@ Pokretanje:
 -npm start u terminalu projekta
 <br>
 -odlazak na localhost/4200 u pretraživaču
+<br>
 -registrovati i prijaviti se na proizvoljnog korisnika
+<br>
 -spisak korisnika je na početnoj stranici
+<br>
 -poruka se šalje iz dijaloga koji se otvara odabirom korisnika sa spiska
+<br>
 -poruka svim korisnicima šalje se iz toolbar trake (1. ikonica)
+<br>
 -pregled poruka za sada je na pocetnoj stranici. Vršiće se iz toolbar trake
+<br>
 
 Backend:
 <br>
