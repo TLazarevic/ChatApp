@@ -2,6 +2,7 @@ import { Component, OnInit, Inject, Input } from '@angular/core';
 import { User } from '../model/user';
 import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
 import { DialogComponent } from '../dialog/dialog.component';
+import { MessagehelperService, Message } from '../messages/messagehelper.service';
 
 @Component({
   selector: 'app-users',
@@ -10,15 +11,25 @@ import { DialogComponent } from '../dialog/dialog.component';
 })
 export class UsersComponent implements OnInit {
 
+  //https://tutorialedge.net/typescript/angular/angular-websockets-tutorial/
+
   @Input() users: any[];
   selectedUser:User;
-  message:String;
+  message:Message = new Message();
+  allMessages:String[]=[];
+  messageList:boolean=false;
 
-  constructor(public dialog: MatDialog) { 
+  constructor(public dialog: MatDialog, private chatService:MessagehelperService) { 
+    chatService.messages.subscribe(msg => {
+      console.log("Response from websocket: " + msg);
+      this.allMessages.push(msg)
+      if(this.users===undefined)
+        this.messageList=true;
+    });
   }
 
   ngOnInit(): void {
-   console.log(this.users)
+  
   }
 
   onSelect(user: User): void {
@@ -34,13 +45,17 @@ export class UsersComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       console.log('The dialog was closed');
-      this.message = result;
+      this.message.message = result.message;
+      this.message.author=result.user
       this.send()
     });
   }
   
   send(){
-    console.log("sending message:"+this.message+"to"+this.selectedUser.username);
+    console.log("new message from client to websocket: ", this.message);
+    //this.chatService.messages.next(this.message);
+    this.chatService.messages.next(this.message.message);
+    this.message.message = "";
   }
 
 }

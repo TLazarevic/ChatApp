@@ -1,8 +1,13 @@
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons&display=block" rel="stylesheet">
-<ul class="users"> 
-    <li *ngFor="let oneUser of users" (click)="onSelect(oneUser)">
+<ul *ngIf="!messageList"class="users"> 
+    <li  *ngFor="let oneUser of users" (click)="onSelect(oneUser)">
         {{oneUser.username}}
     </li>
+</ul>
+<ul *ngIf="messageList"class="users"> 
+  <li  *ngFor="let message of allMessages">
+    {{message}}
+</li>
 </ul>
 <!-- 
 <div *ngIf="selectedUser" class="selected">

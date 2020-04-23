@@ -26,6 +26,11 @@
                         <app-users [users]="usersRegistered"></app-users>
                     </div>
 
+                    <div *ngIf="isLoggedin" class="users2">
+                        <p >All messages:</p>
+                        <app-users></app-users>
+                    </div>
+
                 </div>
 
                 <div *ngIf="!isLoggedin">

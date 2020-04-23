@@ -18,6 +18,9 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MessagesComponent } from './messages/messages.component';
 import { HttpClientModule } from '@angular/common/http';
+import { MessagehelperService } from './messages/messagehelper.service';
+import { MessagesserviceService } from './messages/messagesservice.service';
+import '@angular/compiler';
 
 @NgModule({
   declarations: [
@@ -46,7 +49,7 @@ import { HttpClientModule } from '@angular/common/http';
   schemas:[
     CUSTOM_ELEMENTS_SCHEMA
   ],
-  providers: [],
+  providers: [MessagehelperService,MessagesserviceService],
   bootstrap: [AppComponent],
   entryComponents: [
     DialogComponent
