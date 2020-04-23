@@ -20,6 +20,7 @@ import { MessagesComponent } from './messages/messages.component';
 import { HttpClientModule } from '@angular/common/http';
 import { MessagehelperService } from './messages/messagehelper.service';
 import { MessagesserviceService } from './messages/messagesservice.service';
+import { CommonModule } from '@angular/common';  
 import '@angular/compiler';
 
 @NgModule({
@@ -44,7 +45,8 @@ import '@angular/compiler';
     MatIconModule,
     MatDialogModule,
     BrowserAnimationsModule,
-    HttpClientModule
+    HttpClientModule,
+    CommonModule
   ],
   schemas:[
     CUSTOM_ELEMENTS_SCHEMA

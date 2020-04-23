@@ -3,6 +3,10 @@ import { User } from '../model/user';
 import { UsersComponent } from '../users/users.component';
 import { LoginserviceService } from '../login/loginservice.service';
 import { UsersserviceService } from '../users/usersservice.service';
+import { Router, NavigationStart, NavigationEnd } from '@angular/router';
+import { Subscription } from 'rxjs';
+
+export let browserRefresh = false;
 
 @Component({
   selector: 'app-home',
@@ -15,11 +19,15 @@ export class HomeComponent implements OnInit {
   isLoggedin:boolean;
   usersLogged:User[] = []
   usersRegistered:User[] = []
-  isLoaded:boolean
+  isLoaded:boolean;
+
   
-  constructor(private loginService:LoginserviceService, private userservice:UsersserviceService) { }
+  constructor(private loginService:LoginserviceService, private userservice:UsersserviceService,private router: Router) {
+    
+   }
 
   ngOnInit(): void {
+
     if (this.loginService.loggedInUser!=null){
       var User=this.loginService.loggedInUser;
       this.isLoggedin=true;
@@ -34,6 +42,8 @@ export class HomeComponent implements OnInit {
   }
     else
       this.isLoggedin=false;
-    
+
+   
 }
+
 }

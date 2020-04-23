@@ -23,7 +23,7 @@ export class LoginComponent implements OnInit {
   logIn(){
     this.loginService.login(this.username,this.password).subscribe(data=>{
       if(data!=null){
-        alert(data)
+        alert("Successful login")
         this.loginService.loggedInUser=data
         this.router.navigate(['/home']);
       }

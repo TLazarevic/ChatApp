@@ -6,7 +6,9 @@
 </ul>
 <ul *ngIf="messageList"class="users"> 
   <li  *ngFor="let message of allMessages">
-    {{message}}
+    {{message.author.username}}
+ :
+    {{message.message}}
 </li>
 </ul>
 <!-- 

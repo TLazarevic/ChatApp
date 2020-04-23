@@ -2,7 +2,9 @@ import { Component, OnInit, Inject, Input } from '@angular/core';
 import { User } from '../model/user';
 import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
 import { DialogComponent } from '../dialog/dialog.component';
-import { MessagehelperService, Message } from '../messages/messagehelper.service';
+import { MessagehelperService } from '../messages/messagehelper.service';
+import { Message } from '../model/message';
+import { LoginserviceService } from '../login/loginservice.service';
 
 @Component({
   selector: 'app-users',
@@ -16,10 +18,14 @@ export class UsersComponent implements OnInit {
   @Input() users: any[];
   selectedUser:User;
   message:Message = new Message();
-  allMessages:String[]=[];
+  allMessages:Message[]=[];
   messageList:boolean=false;
+  user:User;
 
-  constructor(public dialog: MatDialog, private chatService:MessagehelperService) { 
+  constructor(public dialog: MatDialog, private chatService:MessagehelperService, private loginservice:LoginserviceService) { 
+
+    chatService.connect();
+    
     chatService.messages.subscribe(msg => {
       console.log("Response from websocket: " + msg);
       this.allMessages.push(msg)
@@ -46,15 +52,16 @@ export class UsersComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       console.log('The dialog was closed');
       this.message.message = result.message;
-      this.message.author=result.user
+      this.message.reciever=result.user
+      this.message.author=this.loginservice.loggedInUser
       this.send()
     });
   }
   
   send(){
     console.log("new message from client to websocket: ", this.message);
-    //this.chatService.messages.next(this.message);
-    this.chatService.messages.next(this.message.message);
+    this.chatService.messages.next(this.message);
+    //this.chatService.messages.next(this.message.message);
     this.message.message = "";
   }
 
