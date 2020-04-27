@@ -17,8 +17,10 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import model.User;
+
 @Stateless
-@Path("/chat")
+@Path("/messages")
 @LocalBean //sad restendpointi ne moraju biti u remote interfejsu
 //prima rest i prepakuje poruku u jms poruku 1 korak
 public class ChatBean {
@@ -31,12 +33,25 @@ public class ChatBean {
 	
 
 	@GET
-	@Path("/test")
+	@Path("/all")
 	@Produces(MediaType.TEXT_PLAIN)
-	public String test() {
+	public String sendToAll() {
 		return "ok";
 	}
 	
+	@POST
+	@Path("/user")
+	@Produces(MediaType.TEXT_PLAIN)
+	public String sendToUser() {
+		return "ok";
+	}
+	
+	@GET
+	@Path("/{user}")
+	@Produces(MediaType.TEXT_PLAIN)
+	public String getAllMessages(@PathParam("user") User u) {
+		return "ok";
+	}
 	
 	
 	@POST

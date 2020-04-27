@@ -22,6 +22,7 @@ import { MessagehelperService } from './messages/messagehelper.service';
 import { MessagesserviceService } from './messages/messagesservice.service';
 import { CommonModule } from '@angular/common';  
 import '@angular/compiler';
+import { MatTooltipModule } from '@angular/material/tooltip'
 
 @NgModule({
   declarations: [
@@ -46,7 +47,8 @@ import '@angular/compiler';
     MatDialogModule,
     BrowserAnimationsModule,
     HttpClientModule,
-    CommonModule
+    CommonModule,
+    MatTooltipModule
   ],
   schemas:[
     CUSTOM_ELEMENTS_SCHEMA
