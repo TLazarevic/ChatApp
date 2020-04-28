@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.ejb.PostActivate;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
@@ -31,107 +32,89 @@ import javax.ws.rs.core.Response;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import model.CustomMessage;
 import model.User;
 
 @Stateful
 @Path("/users")
-@LocalBean //sad restendpointi ne moraju biti u remote interfejsu
+@LocalBean // sad restendpointi ne moraju biti u remote interfejsu
 //prima rest i prepakuje poruku u jms poruku 1 korak
 public class UserBean {
-	
+
 	@EJB
-	Data data; //database for registered users and messages
-	
-	@Context
-	ServletContext context; //servlet context for logged in users
-	
-	@PostConstruct
-	public void init () {
-		List<User> list = new ArrayList<>();
-	  this.context.setAttribute("loggedIn", list);
-	}
-	
+	Data data; // database for registered users and messages
+
 	@POST
 	@Path("/login")
 	@Produces(MediaType.TEXT_PLAIN)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response login(User user) {
-	
-		System.out.println(user.getUsername());
-		if(data.registered.contains(user)) 
-		{
-			System.out.println("Sucessfully logged in "+user.getUsername());
-			
-			@SuppressWarnings("unchecked")
-			List<User> loggedIn= (List<User>) context.getAttribute("loggedIn");
-			loggedIn.add(user);
-			context.setAttribute("loggedIn", loggedIn);
-			
-			return Response
-				      .status(Response.Status.OK)
-				      .build();
 
+	public String login(User user) {
+
+		if (data.getRegistered().contains(user)) {
+			if (!data.getLoggedIn().contains(user))
+				data.getLoggedIn().add(user);
+				System.out.println(user+" logged in");
+				
+				ObjectMapper mapper = new ObjectMapper();
+				String obj;
+				try {
+					obj = mapper.writeValueAsString(user);
+					return obj;
+				} catch (JsonProcessingException e) {
+					e.printStackTrace();
+				}	
 		}
-		
-		return Response
-			      .status(Response.Status.BAD_REQUEST)
-			      .build();
-		
+
+		return null;
+
 	}
-	
+
 	@POST
 	@Path("/register")
 	@Produces(MediaType.TEXT_PLAIN)
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response register(User user) {
-		
-		for(User u : data.registered) {
+
+		for (User u : data.getRegistered()) {
 			if (u.getUsername().equals(user.getUsername()))
-			return Response
-			      .status(Response.Status.BAD_REQUEST)
-			      .build();
+				return Response.status(Response.Status.BAD_REQUEST).build();
 		}
-		
-		System.out.println("Sucessfully registered "+user.getUsername());
-		data.registered.add(user);
-		
-		return Response
-			      .status(Response.Status.OK)
-			      .build();
+
+		System.out.println("Sucessfully registered " + user.getUsername());
+		data.getRegistered().add(user);
+
+		return Response.status(Response.Status.OK).build();
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@GET
 	@Path("/loggedIn")
 	public List<User> loggedIn() {
-		System.out.println("loggedIn "+ context.getAttribute("loggedIn"));
-		return (List<User>) context.getAttribute("loggedIn");
+		System.out.println("loggedIn " + data.getLoggedIn());
+		return data.getLoggedIn();
 	}
-	
+
 	@GET
 	@Path("/registered")
 	public List<User> registered() {
-		System.out.println("registered "+data.registered);
-		return data.registered;
+		System.out.println("registered " + data.getRegistered());
+		return data.getRegistered();
 	}
-	
+
 	@DELETE
 	@Path("/loggedIn/{user}")
 	@Produces(MediaType.TEXT_PLAIN)
 	public String delete(@PathParam("user") String user) {
 		System.out.println("deleting");
-		
-		@SuppressWarnings("unchecked")
-		List<User> loggedIn = (List<User>) context.getAttribute("loggedIn");
-		
-		for(User u : loggedIn) {
-			if(u.getUsername().equals(user)) {
-				loggedIn.remove(u);
-				context.setAttribute("loggedIn", loggedIn);
+
+		for (User u : data.getLoggedIn()) {
+			if (u.getUsername().equals(user)) {
+				data.getLoggedIn().remove(u);
 				return "sucess";
 			}
 		}
 		return "error";
-		
+
 	}
 }

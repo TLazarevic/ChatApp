@@ -32,66 +32,99 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import model.CustomMessage;
 import model.User;
 
 @Stateless
 @Path("/messages")
-@LocalBean //sad restendpointi ne moraju biti u remote interfejsu
+@LocalBean // sad restendpointi ne moraju biti u remote interfejsu
 //prima rest i prepakuje poruku u jms poruku 1 korak
 public class MessageBean {
 
 	@EJB
-	Data data; //database for registered users and messages
-	
-	@Context
-	ServletContext context; //servlet context for logged in users
-	
+	Data data; // database for registered users and messages
 
-	@GET
+
+	@POST
 	@Path("/all")
 	@Produces(MediaType.TEXT_PLAIN)
-	public Response sendToAll(CustomMessage recievedMessage) {
+	public Response sendToAll(String recievedMessage) throws JsonMappingException, JsonProcessingException {
+		ObjectMapper mapper = new ObjectMapper();
+		CustomMessage message = mapper.readValue(recievedMessage, CustomMessage.class);
 		
-		@SuppressWarnings("unchecked")
-		List<User> loggedIn=(List<User>) context.getAttribute("loggedIn");
-		for (User u: loggedIn) {
-			List<CustomMessage> temp=data.userMessages.get(u.getUsername());
-			temp.add(recievedMessage);
-			data.userMessages.put(u.getUsername(), temp);
-		}
+		List<CustomMessage> temp = new ArrayList<>();
+		for (User u : data.getLoggedIn()) {
+			try {
+				temp = data.getUserMessages().get(u.getUsername());
+				temp.add(message);
+				data.getUserMessages().put(u.getUsername(), temp);
+				return Response.status(Response.Status.OK).build();
+			}
+			catch (Exception e){
+				temp= new ArrayList<>();
+				data.getUserMessages().put(u.getUsername(), temp);
+				return Response.status(Response.Status.OK).build();
+			}
 			
-			return Response
-				      .status(Response.Status.OK)
-				      .build();
+		}
+
+		return Response.status(Response.Status.BAD_REQUEST).build();
 
 	}
-	
+
 	@POST
 	@Path("/user")
 	@Produces(MediaType.TEXT_PLAIN)
-	public Response sendToUser(CustomMessage recievedMessage) {
+	public Response sendToUser(String recievedMessage) {
 		
-		@SuppressWarnings("unchecked")
-		List<User> loggedIn=(List<User>) context.getAttribute("loggedIn");
+		ObjectMapper mapper = new ObjectMapper();
+		CustomMessage message;
+		try {
+			message = mapper.readValue(recievedMessage, CustomMessage.class);
+			System.out.println(recievedMessage);
+			
+			try {
+				List<CustomMessage> temp = data.getUserMessages().get(message.getReciever().getUsername());
+				temp.add(message);
+				data.getUserMessages().put(message.getReciever().getUsername(), temp);
 
-			List<CustomMessage> temp=data.userMessages.get(recievedMessage.getReciever().getUsername());
-			temp.add(recievedMessage);
-			data.userMessages.put(recievedMessage.getReciever().getUsername(), temp);
+				return Response.status(Response.Status.OK).build();
+				
+			}
+			catch (Exception e){
+				List<CustomMessage> temp = new ArrayList<>();
+				temp.add(message);
+				data.getUserMessages().put(message.getReciever().getUsername(), temp);
+				return Response.status(Response.Status.OK).build();
+			}
+			
+
+		} catch (JsonMappingException e1) {
+			e1.printStackTrace();
+		} catch (JsonProcessingException e1) {
+			e1.printStackTrace();
+		}
+		return Response.status(Response.Status.BAD_REQUEST).build();
 		
-			return Response
-				      .status(Response.Status.OK)
-				      .build();
-
 	}
-	
+
 	@GET
 	@Path("/{user}")
 	@Produces(MediaType.TEXT_PLAIN)
 	public List<CustomMessage> getAllMessages(@PathParam("user") String user) {
-		return data.userMessages.get(user);
+		try {
+			
+			return data.getUserMessages().get(user);
+		}
+		catch(Exception e) {
+			return new ArrayList<CustomMessage>();
+		}
 	}
-	
+
 //	
 //	@POST
 //	@Path("/post/{text}")
@@ -112,6 +145,5 @@ public class MessageBean {
 //				
 //		return "ok";
 //	}
-	
-	
+
 }

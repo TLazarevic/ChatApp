@@ -31,16 +31,20 @@ export class NavbarComponent implements OnInit {
       this.message.message = result.message;
       this.message.author= this.loginservice.loggedInUser;
       this.message.reciever.username="all"
+      this.message.subject=result.subject
+      this.message.date=new Date()
       this.send()
     });
   }
   
   send(){
-    console.log("new message from client to websocket: ", this.message);
-    this.chatService.messages.next(this.message);
-    //this.chatService.messages.next(this.message.message);
-    this.message.message = "";
-    this.message.author = new User();
+    // console.log("new message from client to websocket: ", this.message);
+    // this.chatService.messages.next(this.message);
+    // //this.chatService.messages.next(this.message.message);
+    // this.message.message = "";
+    // this.message.author = new User();
+    
+    this.chatService.broadcast(this.message).subscribe()
   }
 
   logout(){

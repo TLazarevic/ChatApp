@@ -30,11 +30,10 @@ export class HomeComponent implements OnInit {
 
   ngOnInit(): void {
     this.fetchData();
-    this.interval = setInterval(() => { 
-        this.fetchData(); 
-    }, 9000);
+    // this.interval = setInterval(() => { 
+    //     this.fetchData(); 
+    // }, 9000);
     
-  
 }
 
 fetchData(){

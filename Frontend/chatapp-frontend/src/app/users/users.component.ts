@@ -5,6 +5,7 @@ import { DialogComponent } from '../dialog/dialog.component';
 import { MessagehelperService } from '../messages/messagehelper.service';
 import { Message } from '../model/message';
 import { LoginserviceService } from '../login/loginservice.service';
+import { UsersserviceService } from './usersservice.service';
 
 @Component({
   selector: 'app-users',
@@ -22,20 +23,25 @@ export class UsersComponent implements OnInit {
   messageList:boolean=false;
   user:User;
 
-  constructor(public dialog: MatDialog, private chatService:MessagehelperService, private loginservice:LoginserviceService) { 
+  constructor(public dialog: MatDialog, private chatService:MessagehelperService, private loginservice:LoginserviceService,private messser:MessagehelperService) { 
 
-    chatService.connect();
+    // chatService.connect();
     
-    chatService.messages.subscribe(msg => {
-      console.log("Response from websocket: " + msg);
-      this.allMessages.push(msg)
-      if(this.users===undefined)
-        this.messageList=true;
-    });
+    // chatService.messages.subscribe(msg => {
+    //   console.log("Response from websocket: " + msg);
+    //   this.allMessages.push(msg)
+    //   if(this.users===undefined)
+    //     this.messageList=true;
+    // });
   }
 
   ngOnInit(): void {
-  
+    if(this.users===undefined){
+         this.messageList=true;
+         this.messser.get().subscribe(data=>this.allMessages=data)
+         console.log(this.allMessages)
+         
+    }
   }
 
   onSelect(user: User): void {
@@ -59,10 +65,12 @@ export class UsersComponent implements OnInit {
   }
   
   send(){
-    console.log("new message from client to websocket: ", this.message);
-    this.chatService.messages.next(this.message);
-    //this.chatService.messages.next(this.message.message);
-    this.message.message = "";
+    // console.log("new message from client to websocket: ", this.message);
+    // this.chatService.messages.next(this.message);
+    // //this.chatService.messages.next(this.message.message);
+    // this.message.message = "";
+
+    this.chatService.send(this.message).subscribe()
   }
 
 }

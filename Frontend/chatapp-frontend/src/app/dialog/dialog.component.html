@@ -2,6 +2,8 @@
 <div mat-dialog-content>
   <p *ngIf="userPresent">To: {{data.user.username}}</p>
   <mat-form-field>
+    <mat-label>Subject:</mat-label>
+    <input matInput [(ngModel)]="data.subject">
     <mat-label>Message content:</mat-label>
     <input matInput [(ngModel)]="data.message">
   </mat-form-field>
