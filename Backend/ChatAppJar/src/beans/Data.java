@@ -22,17 +22,15 @@ import model.User;
 @AccessTimeout(value = 120000)
 public class Data {
 
-	private List<User> loggedIn;
-	private List<User> registered;
-	private HashMap<String, List<CustomMessage>> userMessages;
+	private List<User> loggedIn= new ArrayList<User>();
+	private List<User> registered=new ArrayList<User>();
+	private HashMap<String, List<CustomMessage>> userMessages=new HashMap<String,List<CustomMessage>>();
 	
 	/**
 	 * Default constructor.
 	 */
 	public Data() {
-		registered = new ArrayList<User>();
-		loggedIn= new ArrayList<User>();
-		userMessages=new HashMap<String,List<CustomMessage>>();
+
 	}
 
 
@@ -62,7 +60,7 @@ public class Data {
 
 	@Lock(LockType.READ)
 	public List<User> getLoggedIn() {
-		return registered;
+		return this.loggedIn;
 	}
 
 	@Lock(LockType.WRITE)

@@ -3,6 +3,8 @@ import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
 import { User } from '../model/user';
 import { Observable } from 'rxjs';
 import { IpService } from '../ip.service';
+import { HomeComponent } from '../home/home.component';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +19,7 @@ export class LoginserviceService {
     })
   };
 
-  constructor(private http: HttpClient, private ip:IpService) { }
+  constructor(private http: HttpClient, private ip:IpService,private router:Router) { }
 
   login(username:String,password:String): Observable<User>{
       var user=new User();
@@ -33,6 +35,7 @@ export class LoginserviceService {
   logout(): Observable<String>{
    var res=this.http.delete<String>('http://localhost:8080/ChatAppWar/rest/users/loggedIn/'+this.loggedInUser.username,{ responseType: "text" as "json"})
    this.loggedInUser=null;
+   this.router.navigate(['/login'])
     return res;
   }
 }

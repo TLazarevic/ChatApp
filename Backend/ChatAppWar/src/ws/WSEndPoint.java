@@ -30,7 +30,7 @@ import model.User;
 //salje svim klijentima 3 korak
 public class WSEndPoint {
 
-	static Map<String, Session> sessions = new ConcurrentHashMap<>();
+	public static Map<String, Session> sessions = new ConcurrentHashMap<>();
 	
 	@OnOpen
 	public void onOpen(@PathParam("clientId") String clientId, Session session) {
@@ -44,23 +44,24 @@ public class WSEndPoint {
 	@OnMessage
 	public void echoTextMessage(String msg) {
 
-		ObjectMapper mapper = new ObjectMapper();
-		CustomMessage obj;
-		try {
-			obj = mapper.readValue(msg, CustomMessage.class);
-			System.out.println(msg);
-			String reciever = obj.getReciever().getUsername();
-			String author = obj.getAuthor().getUsername();
 
-			if (!reciever.equals("all")) { 										//salji odredjenom korisniku i senderu da vidi
-				try {
-					//if(!sessions.get(reciever).equals(obj.getAuthor()))
-						sessions.get(reciever).getBasicRemote().sendText(msg);
-						sessions.get(author).getBasicRemote().sendText(msg);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			} else {  																//broadcast, salji svima
+//		ObjectMapper mapper = new ObjectMapper();
+//		CustomMessage obj;
+//		try {
+//			obj = mapper.readValue(msg, CustomMessage.class);
+//			System.out.println(msg);
+//			String reciever = obj.getReciever().getUsername();
+//			String author = obj.getAuthor().getUsername();
+//
+//			if (!reciever.equals("all")) { 										//salji odredjenom korisniku i senderu da vidi
+//				try {
+//					//if(!sessions.get(reciever).equals(obj.getAuthor()))
+//						sessions.get(reciever).getBasicRemote().sendText(msg);
+//						sessions.get(author).getBasicRemote().sendText(msg);
+//				} catch (IOException e) {
+//					e.printStackTrace();
+//				}
+//			} else {  																//broadcast, salji svima
 				for (Entry<String, Session> entry : sessions.entrySet()) {
 					try {
 						//if(!sessions.get(reciever).equals(obj.getAuthor()))
@@ -68,12 +69,12 @@ public class WSEndPoint {
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
-
-				}
-			}
-		} catch (JsonProcessingException e1) {
-			e1.printStackTrace();
-		}
+//
+//				}
+//			}
+//		} catch (JsonProcessingException e1) {
+//			e1.printStackTrace();
+//		}
 
 	}
 
@@ -85,5 +86,5 @@ public class WSEndPoint {
 //		}catch(IOException e) {
 //			e.printStackTrace();
 //		}
-	// }
+	 }
 }

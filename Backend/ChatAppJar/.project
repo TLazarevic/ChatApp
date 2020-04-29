@@ -3,6 +3,7 @@
 	<name>ChatAppJar</name>
 	<comment></comment>
 	<projects>
+		<project>ChatAppWar</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

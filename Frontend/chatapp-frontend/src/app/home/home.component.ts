@@ -6,6 +6,7 @@ import { UsersserviceService } from '../users/usersservice.service';
 import { Router, NavigationStart, NavigationEnd, RouterEvent } from '@angular/router';
 import { Subscription, Subject } from 'rxjs';
 import { filter } from 'rxjs/operators';
+import { MessagehelperService } from '../messages/messagehelper.service';
 
 export let browserRefresh = false;
 
@@ -24,16 +25,21 @@ export class HomeComponent implements OnInit {
   interval:any
 
   
-  constructor(private loginService:LoginserviceService, private userservice:UsersserviceService,private router: Router) {
+  constructor(private loginService:LoginserviceService, private userservice:UsersserviceService,private router: Router,
+    private chatService:MessagehelperService) {
     
    }
 
+
   ngOnInit(): void {
     this.fetchData();
-    // this.interval = setInterval(() => { 
-    //     this.fetchData(); 
-    // }, 9000);
-    
+}
+
+refreshUsers(){
+  this.userservice.getLoggedIn().subscribe(data=>{
+    this.usersLogged=data
+    this.userservice.getRegistered().subscribe(data2=>{
+      this.usersRegistered=data2})})
 }
 
 fetchData(){
@@ -48,6 +54,13 @@ fetchData(){
             console.log('refreshed')
             this.isLoggedin=true;
             this.isLoaded=true;
+
+            this.chatService.connect();
+    
+            this.chatService.messages.subscribe(msg => {
+              console.log("Response from websocket: " + msg);
+              this.refreshUsers();
+            });
           })
           
         })

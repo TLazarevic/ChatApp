@@ -23,7 +23,7 @@ export class RegisterComponent implements OnInit {
         this.router.navigate(['/login']);
       
       },
-         (error: PositionError) => {
+         (error: Error) => {
           alert("Try again")
         });
       }

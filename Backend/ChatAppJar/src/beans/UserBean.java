@@ -1,20 +1,12 @@
 package beans;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
-import javax.ejb.PostActivate;
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Singleton;
 import javax.ejb.Stateful;
-import javax.ejb.Stateless;
-import javax.jms.ConnectionFactory;
-import javax.jms.Queue;
-import javax.servlet.ServletContext;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -22,9 +14,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.container.ContainerResponseContext;
-import javax.ws.rs.container.ContainerResponseFilter;
+
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -34,21 +24,24 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import model.CustomMessage;
 import model.User;
+import ws.WSEndPoint;
 
 @Stateful
 @Path("/users")
 @LocalBean // sad restendpointi ne moraju biti u remote interfejsu
-//prima rest i prepakuje poruku u jms poruku 1 korak
+//prima rest i direktno se obraca websocketu
 public class UserBean {
 
 	@EJB
-	Data data; // database for registered users and messages
+	Data data; // baza korisnika i poruka
+	
+	@EJB WSEndPoint ws; //websocket
+
 
 	@POST
 	@Path("/login")
 	@Produces(MediaType.TEXT_PLAIN)
 	@Consumes(MediaType.APPLICATION_JSON)
-
 	public String login(User user) {
 
 		if (data.getRegistered().contains(user)) {
@@ -60,6 +53,7 @@ public class UserBean {
 				String obj;
 				try {
 					obj = mapper.writeValueAsString(user);
+					ws.echoTextMessage("newUser"); //posalji info socketu
 					return obj;
 				} catch (JsonProcessingException e) {
 					e.printStackTrace();
@@ -107,11 +101,12 @@ public class UserBean {
 	@Produces(MediaType.TEXT_PLAIN)
 	public String delete(@PathParam("user") String user) {
 		System.out.println("deleting");
-
+		ws.sessions.remove(user);
 		for (User u : data.getLoggedIn()) {
 			if (u.getUsername().equals(user)) {
 				data.getLoggedIn().remove(u);
-				return "sucess";
+				ws.echoTextMessage("deletedUser"); //posalji info socketu
+				return "success";
 			}
 		}
 		return "error";

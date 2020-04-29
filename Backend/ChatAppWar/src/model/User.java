@@ -4,7 +4,20 @@ public class User {
 
 	private String username;
 	private String password;
+	private String host;
 	
+	public User(String username, String password, String host) {
+		super();
+		this.username = username;
+		this.password = password;
+		this.host = host;
+	}
+	public String getHost() {
+		return host;
+	}
+	public void setHost(String host) {
+		this.host = host;
+	}
 	public User() {
 		super();
 	}

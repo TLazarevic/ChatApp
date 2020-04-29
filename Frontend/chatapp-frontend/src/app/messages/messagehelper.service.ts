@@ -1,5 +1,5 @@
 import { Injectable, Inject } from '@angular/core';
-import { Subject } from 'rxjs';
+import { Subject, Observable } from 'rxjs';
 import { MessagesserviceService } from './messagesservice.service';
 import {map} from 'rxjs/operators';
 import { Message } from '../model/message';
@@ -15,7 +15,7 @@ const CHAT_URL = "ws://localhost:8080/ChatAppWar/ws/";
 })
 export class MessagehelperService {
 
-  public messages: Subject<Message>;
+  public messages: Subject<String>;
   //public messages: Subject<String>;
 
   // public connect(){
@@ -37,12 +37,29 @@ export class MessagehelperService {
   //    ));
   //  }
 
+
+  public connect(){
+    this.messages = <Subject<String>>this.wsService.connect(CHAT_URL+this.loginservice.loggedInUser.username).pipe(map(
+             (response: MessageEvent): String => {
+             //let data = JSON.parse(response.data);
+             return response.data
+           }
+         ));
+   }
+
   httpOptionsText = {
+    headers: new HttpHeaders({
+      'Content-Type': 'application/json'
+    })
+  };
+
+  httpOptionsText2 = {
     headers: new HttpHeaders({
       'Content-Type': 'application/json'
     }),
     responseType: "text" as "json"
   };
+
 
   
   public send(message:Message){
@@ -57,9 +74,9 @@ export class MessagehelperService {
     return this.http.post<Response>('http://localhost:8080/ChatAppWar/rest/messages/all', messageJSON, this.httpOptionsText)
   }
 
+ 
 
-  public get(){
-
+  public get(): Observable<Message[]>{
     return this.http.get<Message[]>('http://localhost:8080/ChatAppWar/rest/messages/'+this.loginservice.loggedInUser.username, this.httpOptionsText)
   }
   

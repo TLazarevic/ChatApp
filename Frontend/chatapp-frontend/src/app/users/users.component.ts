@@ -19,29 +19,31 @@ export class UsersComponent implements OnInit {
   @Input() users: any[];
   selectedUser:User;
   message:Message = new Message();
-  allMessages:Message[]=[];
+  allMessages:Message[];
   messageList:boolean=false;
   user:User;
+  interval: any;
 
   constructor(public dialog: MatDialog, private chatService:MessagehelperService, private loginservice:LoginserviceService,private messser:MessagehelperService) { 
 
-    // chatService.connect();
-    
-    // chatService.messages.subscribe(msg => {
-    //   console.log("Response from websocket: " + msg);
-    //   this.allMessages.push(msg)
-    //   if(this.users===undefined)
-    //     this.messageList=true;
-    // });
   }
 
   ngOnInit(): void {
+    this.fetchData();
+    this.interval = setInterval(() => { 
+        this.fetchData(); 
+    }, 9000);
+  }
+
+  fetchData(){
     if(this.users===undefined){
-         this.messageList=true;
-         this.messser.get().subscribe(data=>this.allMessages=data)
-         console.log(this.allMessages)
-         
-    }
+      this.messageList=true;
+      this.messser.get().subscribe(data=>{
+        this.allMessages=data
+        console.log(this.allMessages)
+      })
+      
+      }
   }
 
   onSelect(user: User): void {
