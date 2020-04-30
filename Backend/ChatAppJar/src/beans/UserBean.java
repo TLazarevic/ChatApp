@@ -22,6 +22,7 @@ import javax.ws.rs.core.Response;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import data.Data;
 import model.CustomMessage;
 import model.User;
 import ws.WSEndPoint;
@@ -36,6 +37,14 @@ public class UserBean {
 	Data data; // baza korisnika i poruka
 	
 	@EJB WSEndPoint ws; //websocket
+	
+	
+	@GET
+	@Path("/test")
+	public String test() {
+		System.out.println("registered " + data.getRegistered());
+		return "ok";
+	}
 
 
 	@POST
