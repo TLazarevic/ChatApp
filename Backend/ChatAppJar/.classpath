@@ -18,5 +18,6 @@
 	<classpathentry kind="lib" path="C:/Users/HP/wildfly-11.0.0.Final/modules/system/layers/base/javax/ejb/api/main/jboss-ejb-api_3.2_spec-1.0.0.Final.jar"/>
 	<classpathentry kind="src" path="/ChatAppWar"/>
 	<classpathentry kind="lib" path="/ChatClient/lib/jboss-client.jar"/>
+	<classpathentry kind="lib" path="/siebog-jar/lib/jboss-client.jar" sourcepath="C:/Users/HP/.m2/repository/org/wildfly/wildfly-client-all/11.0.0.Final/wildfly-client-all-11.0.0.Final-sources.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

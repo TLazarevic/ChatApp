@@ -42,49 +42,20 @@ public class WSEndPoint {
 	}
 
 	@OnMessage
-	public void echoTextMessage(String msg) {
+	public void echoTextMessage(String msg)  {
 
-
-//		ObjectMapper mapper = new ObjectMapper();
-//		CustomMessage obj;
-//		try {
-//			obj = mapper.readValue(msg, CustomMessage.class);
-//			System.out.println(msg);
-//			String reciever = obj.getReciever().getUsername();
-//			String author = obj.getAuthor().getUsername();
-//
-//			if (!reciever.equals("all")) { 										//salji odredjenom korisniku i senderu da vidi
-//				try {
-//					//if(!sessions.get(reciever).equals(obj.getAuthor()))
-//						sessions.get(reciever).getBasicRemote().sendText(msg);
-//						sessions.get(author).getBasicRemote().sendText(msg);
-//				} catch (IOException e) {
-//					e.printStackTrace();
-//				}
-//			} else {  																//broadcast, salji svima
 				for (Entry<String, Session> entry : sessions.entrySet()) {
-					try {
-						//if(!sessions.get(reciever).equals(obj.getAuthor()))
-							((Session) entry.getValue()).getBasicRemote().sendText(msg);
-					} catch (IOException e) {
-						e.printStackTrace();
+
+							try {
+								((Session) entry.getValue()).getBasicRemote().sendText(msg);
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+				}
+					if(!msg.equals("loggedIn")) {
+						String[] parts=msg.split(":");
+						sessions.remove(parts[1]);
 					}
-//
-//				}
-//			}
-//		} catch (JsonProcessingException e1) {
-//			e1.printStackTrace();
-//		}
-
-	}
-
-//		try {
-//			for (Session s : sessions) {
-//				s.getBasicRemote().sendText(msg);
-//				System.out.print("onmessage");
-//			}
-//		}catch(IOException e) {
-//			e.printStackTrace();
-//		}
 	 }
 }

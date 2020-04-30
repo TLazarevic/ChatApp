@@ -2,11 +2,19 @@ package beans;
 
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Singleton;
 import javax.ejb.Stateful;
-
+import javax.jms.Connection;
+import javax.jms.ConnectionFactory;
+import javax.jms.JMSException;
+import javax.jms.MessageProducer;
+import javax.jms.Session;
+import javax.jms.TextMessage;
+import javax.jms.Topic;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -30,14 +38,27 @@ import ws.WSEndPoint;
 @Stateful
 @Path("/users")
 @LocalBean // sad restendpointi ne moraju biti u remote interfejsu
-//prima rest i direktno se obraca websocketu
+//Agentski centar
 public class UserBean {
 
 	@EJB
 	Data data; // baza korisnika i poruka
 	
-	@EJB WSEndPoint ws; //websocket
+	private Connection connection;
+	@Resource(lookup = "java:jboss/exported/jms/RemoteConnectionFactory")
+	private ConnectionFactory connectionFactory;
+	@Resource(lookup = "java:jboss/exported/jms/topic/publicTopic")
+	private Topic defaultTopic;
 	
+
+	@PostConstruct
+	public void postConstruction() {
+		try {
+			connection = connectionFactory.createConnection("guest", "guest.guest.1");
+		} catch (JMSException ex) {
+			throw new IllegalStateException(ex);
+		} 
+	}
 	
 	@GET
 	@Path("/test")
@@ -52,6 +73,8 @@ public class UserBean {
 	@Produces(MediaType.TEXT_PLAIN)
 	@Consumes(MediaType.APPLICATION_JSON)
 	public String login(User user) {
+		
+		
 
 		if (data.getRegistered().contains(user)) {
 			if (!data.getLoggedIn().contains(user))
@@ -62,8 +85,22 @@ public class UserBean {
 				String obj;
 				try {
 					obj = mapper.writeValueAsString(user);
-					ws.echoTextMessage("newUser"); //posalji info socketu
+					
+					try {
+						Session session=connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+						connection.start();
+						MessageProducer producer = session.createProducer(this.defaultTopic);
+						TextMessage message = session.createTextMessage();
+						message.setText("loggedIn");
+						producer.send((TextMessage) message);
+						producer.close();
+						connection.close();
+					} catch (JMSException e) {
+						e.printStackTrace();
+					}
+					
 					return obj;
+					
 				} catch (JsonProcessingException e) {
 					e.printStackTrace();
 				}	
@@ -108,13 +145,20 @@ public class UserBean {
 	@DELETE
 	@Path("/loggedIn/{user}")
 	@Produces(MediaType.TEXT_PLAIN)
-	public String delete(@PathParam("user") String user) {
+	public String delete(@PathParam("user") String user) throws JMSException {
 		System.out.println("deleting");
-		ws.sessions.remove(user);
+		
 		for (User u : data.getLoggedIn()) {
 			if (u.getUsername().equals(user)) {
 				data.getLoggedIn().remove(u);
-				ws.echoTextMessage("deletedUser"); //posalji info socketu
+				Session session=connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+				connection.start();
+				MessageProducer producer = session.createProducer(this.defaultTopic);
+				TextMessage message = session.createTextMessage();
+				message.setText("loggedOut:"+user);
+				producer.send((TextMessage) message);
+				producer.close();
+				connection.close();
 				return "success";
 			}
 		}
