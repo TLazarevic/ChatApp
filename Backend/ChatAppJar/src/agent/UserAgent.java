@@ -7,7 +7,7 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 
-import ws.WSEndPoint;
+import ws.WS;
 
 
 @MessageDriven(activationConfig = {
@@ -15,7 +15,7 @@ import ws.WSEndPoint;
 		@ActivationConfigProperty(propertyName = "destination", propertyValue = "jms/topic/publicTopic") })
 public class UserAgent implements MessageListener{
 	
-	@EJB WSEndPoint ws; //websocket
+	@EJB WS ws; //websocket
 
 	@Override
 	public void onMessage(Message mess) {

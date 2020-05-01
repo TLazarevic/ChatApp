@@ -12,12 +12,12 @@
 			<attribute name="owner.project.facets" value="java"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/HP/Downloads/jackson-annotations-2.11.0.rc1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/HP/Downloads/jackson-core-2.11.0.rc1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/HP/Downloads/jackson-databind-2.11.0.rc1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/HP/wildfly-11.0.0.Final/modules/system/layers/base/javax/ejb/api/main/jboss-ejb-api_3.2_spec-1.0.0.Final.jar"/>
 	<classpathentry kind="src" path="/ChatAppWar"/>
-	<classpathentry kind="lib" path="/ChatClient/lib/jboss-client.jar"/>
-	<classpathentry kind="lib" path="/siebog-jar/lib/jboss-client.jar" sourcepath="C:/Users/HP/.m2/repository/org/wildfly/wildfly-client-all/11.0.0.Final/wildfly-client-all-11.0.0.Final-sources.jar"/>
+	<classpathentry kind="lib" path="lib/jackson-databind-2.11.0.rc1.jar"/>
+	<classpathentry kind="lib" path="lib/jackson-core-2.11.0.rc1.jar"/>
+	<classpathentry kind="lib" path="lib/jackson-annotations-2.11.0.rc1.jar"/>
+	<classpathentry kind="lib" path="lib/jboss-ejb-api_3.2_spec-1.0.0.Final.jar"/>
+	<classpathentry kind="lib" path="lib/jboss-cli-client.jar"/>
+	<classpathentry kind="lib" path="lib/jboss-client.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

@@ -33,7 +33,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import data.Data;
 import model.CustomMessage;
 import model.User;
-import ws.WSEndPoint;
 
 @Stateful
 @Path("/users")
