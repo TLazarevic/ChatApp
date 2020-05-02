@@ -21,7 +21,9 @@ Pokretanje:
 <br>
 -poruka svim korisnicima šalje se iz toolbar trake (1. ikonica)
 <br>
--pregled poruka za sada je na pocetnoj stranici. Vršiće se iz toolbar trake
+-pregled poruka je na početnoj stranici
+<br>
+-logout je poslednja ikonica toolbar trake
 <br>
 
 Backend:
