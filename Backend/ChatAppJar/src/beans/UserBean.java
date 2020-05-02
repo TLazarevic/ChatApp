@@ -22,10 +22,14 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
+import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -33,6 +37,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import data.Data;
 import data.NetworkData;
 import model.CustomMessage;
+import model.Host;
 import model.User;
 
 @Stateful
@@ -74,7 +79,17 @@ public class UserBean {
 			if (!data.getLoggedIn().contains(user))
 				user.setHost(networkData.getThisHost());
 				data.getLoggedIn().add(user);
-				System.out.println(user+" logged in");
+				System.out.println(user.getUsername()+" has logged in");
+				
+				for (Host h:networkData.getNodes()) {
+					ResteasyClient client1 = new ResteasyClientBuilder().build();
+					ResteasyWebTarget target1 = client1
+							.target("http://" + h.getAdress() + ":8080/ChatAppWar/rest/users/loggedIn");
+					Response response1 = target1.request().post(Entity.entity(data.getLoggedIn(), "application/json"));
+					String ret1 = response1.readEntity(String.class);
+					client1.close();
+				}
+				System.out.println("Notified other nodes about the new user");
 				
 				ObjectMapper mapper = new ObjectMapper();
 				String obj;
@@ -133,9 +148,25 @@ public class UserBean {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Path("/loggedIn")
+	//recieve users from master on register OR from another node on userlogin
+	//and notify websocket clients
 	public String loggedIn(List<User> users) {
-		System.out.println("recieved users from master");
+		System.out.println("recieved users");
 		data.setLoggedIn(users);
+		
+		try {
+			Session session=connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+			connection.start();
+			MessageProducer producer = session.createProducer(this.defaultTopic);
+			TextMessage message = session.createTextMessage();
+			message.setText("loggedIn");
+			producer.send((TextMessage) message);
+			producer.close();
+			connection.close();
+		} catch (JMSException e) {
+			e.printStackTrace();
+		}
+			
 		return "OK";
 	}
 

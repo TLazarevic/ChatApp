@@ -55,6 +55,8 @@ import java.net.URISyntaxException;
 @Startup
 public class SessionBean { // standalone.bat -c standalone-full-ha.xml to run in terminal ctrl+c to
 							// gracefully exit
+							//or just republish ejb without stopping in eclipse to gracefully exit and trigger
+							//preDestroy
 
 	@EJB
 	NetworkData data;
@@ -272,7 +274,7 @@ public class SessionBean { // standalone.bat -c standalone-full-ha.xml to run in
 
 	public void delete(Host host) {
 		System.out.println("Deleting node from hosts:");
-		// data.getNodes().remove(host);
+		 data.getNodes().remove(host);
 		for (int i = 0; i < data.getNodes().size(); i++) {
 			System.out.println(i + 1 + "/" + data.getNodes().size());
 			ResteasyClient client = new ResteasyClientBuilder().build();

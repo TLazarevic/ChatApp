@@ -11,6 +11,8 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateful;
 import javax.ejb.Stateless;
 import javax.jms.ConnectionFactory;
+import javax.jms.JMSException;
+import javax.jms.MessageProducer;
 import javax.jms.ObjectMessage;
 import javax.jms.Queue;
 import javax.jms.QueueConnection;
@@ -29,16 +31,23 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
+import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import data.Data;
+import data.NetworkData;
 import model.CustomMessage;
+import model.Host;
 import model.User;
 
 @Stateless
@@ -50,36 +59,34 @@ public class MessageBean {
 	@EJB
 	Data data; // database for registered users and messages
 
+	@EJB
+	NetworkData networkData;
 
 	@POST
 	@Path("/all")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.TEXT_PLAIN)
 	public Response sendToAll(CustomMessage message) throws JsonMappingException, JsonProcessingException {
-//		ObjectMapper mapper = new ObjectMapper();
-//		CustomMessage message = mapper.readValue(recievedMessage, CustomMessage.class);
-		
+
 		List<CustomMessage> temp = new ArrayList<>();
 		for (User u : data.getLoggedIn()) {
 			try {
-				if ( data.getUserMessages().get(u.getUsername())!=null) {
+				if (data.getUserMessages().get(u.getUsername()) != null) {
 					temp = data.getUserMessages().get(u.getUsername());
 					temp.add(message);
 					data.getUserMessages().put(u.getUsername(), temp);
-				}
-				else {
-					temp= new ArrayList<>();
+				} else {
+					temp = new ArrayList<>();
 					temp.add(message);
 					data.getUserMessages().put(u.getUsername(), temp);
 				}
 
-			}
-			catch (Exception e){
+			} catch (Exception e) {
 				e.printStackTrace();
 				return Response.status(Response.Status.BAD_REQUEST).build();
 
 			}
-			
+
 		}
 
 		return Response.status(Response.Status.OK).build();
@@ -91,53 +98,55 @@ public class MessageBean {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.TEXT_PLAIN)
 	public Response sendToUser(CustomMessage message) {
-		
-//		ObjectMapper mapper = new ObjectMapper();
-//		CustomMessage message;
-//		try {
-//			message = mapper.readValue(recievedMessage, CustomMessage.class);
-//			System.out.println(recievedMessage);
-			
+
+		User reciever = message.getReciever();
+		Host recieverHost = reciever.getHost();
+
+		// reroute the message to the recievers node
+		if (!networkData.getThisHost().getAlias().equals(recieverHost.getAlias())) {
+			ResteasyClient client1 = new ResteasyClientBuilder().build();
+			ResteasyWebTarget target1 = client1
+					.target("http://" + recieverHost.getAdress() + ":8080/ChatAppWar/rest/messages/user");
+			Response response1 = target1.request().post(Entity.entity(message, "application/json"));
+			String ret1 = response1.readEntity(String.class);
+			client1.close();
+			return Response.status(Response.Status.OK).build();
+		} else {
+
 			try {
-				if (data.getUserMessages().get(message.getReciever().getUsername())!=null) {
+				if (data.getUserMessages().get(message.getReciever().getUsername()) != null) {
 					List<CustomMessage> temp = data.getUserMessages().get(message.getReciever().getUsername());
 					temp.add(message);
 					data.getUserMessages().put(message.getReciever().getUsername(), temp);
-	
-					return Response.status(Response.Status.OK).build();
-				}
-				else {
+
+				} else {
 					List<CustomMessage> temp = new ArrayList<>();
 					temp.add(message);
 					data.getUserMessages().put(message.getReciever().getUsername(), temp);
-					return Response.status(Response.Status.OK).build();
+
 				}
-				
-			}
-			catch (Exception e){
+
+				return Response.status(Response.Status.OK).build();
+
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
-//			
-//
-//		} catch (JsonMappingException e1) {
-//			e1.printStackTrace();
-//		} catch (JsonProcessingException e1) {
-//			e1.printStackTrace();
-//		}
+		}
+
 		return Response.status(Response.Status.BAD_REQUEST).build();
-		
+
 	}
 
 	@GET
 	@Path("/{user}")
 	public List<CustomMessage> getAllMessages(@PathParam("user") String user) {
 		try {
-			
-			if (data.getUserMessages().get(user)!=null)
+
+			if (data.getUserMessages().get(user) != null)
 				return data.getUserMessages().get(user);
-			else return new ArrayList<CustomMessage>();
-		}
-		catch(Exception e) {
+			else
+				return new ArrayList<CustomMessage>();
+		} catch (Exception e) {
 			e.printStackTrace();
 			return new ArrayList<CustomMessage>();
 		}
