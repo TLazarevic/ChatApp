@@ -133,6 +133,14 @@ public class UserBean {
 		System.out.println("loggedIn " + data.getLoggedIn());
 		return data.getLoggedIn();
 	}
+	
+	@POST
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/loggedIn")
+	public List<User> loggedInToNode()
+	{	//TODO
+		return data.getLoggedIn();
+	}
 
 	@GET
 	@Path("/registered")
