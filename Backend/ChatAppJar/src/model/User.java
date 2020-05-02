@@ -4,19 +4,19 @@ public class User {
 
 	private String username;
 	private String password;
-	private String host;
+	private Host host;
 	
-	public User(String username, String password, String host) {
+	public User(String username, String password, Host host) {
 		super();
 		this.username = username;
 		this.password = password;
 		this.host = host;
 	}
-	public String getHost() {
+	public Host getHost() {
 		return host;
 	}
-	public void setHost(String host) {
-		this.host = host;
+	public void setHost(Host host2) {
+		this.host = host2;
 	}
 	public User() {
 		super();

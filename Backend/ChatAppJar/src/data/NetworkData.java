@@ -11,7 +11,7 @@ import javax.ejb.Lock;
 import javax.ejb.LockType;
 import javax.ejb.Singleton;
 
-import beans.Host;
+import model.Host;
 
 @Singleton
 @LocalBean
@@ -21,6 +21,15 @@ public class NetworkData {
 	
 	private List<Host> nodes= new ArrayList<>();
 	private Host master;
+    private Host thisHost;
+    
+	public Host getThisHost() {
+		return thisHost;
+	}
+
+	public void setThisHost(Host thisHost) {
+		this.thisHost = thisHost;
+	}
 	private int counter=0;
 
 	@Lock(LockType.READ)

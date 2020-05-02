@@ -31,6 +31,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import data.Data;
+import data.NetworkData;
 import model.CustomMessage;
 import model.User;
 
@@ -42,6 +43,9 @@ public class UserBean {
 
 	@EJB
 	Data data; // baza korisnika i poruka
+	
+	@EJB
+	NetworkData networkData;
 	
 	private Connection connection;
 	@Resource(lookup = "java:jboss/exported/jms/RemoteConnectionFactory")
@@ -59,13 +63,6 @@ public class UserBean {
 		} 
 	}
 	
-	@GET
-	@Path("/test")
-	public String test() {
-		System.out.println("registered " + data.getRegistered());
-		return "ok";
-	}
-
 
 	@POST
 	@Path("/login")
@@ -73,10 +70,9 @@ public class UserBean {
 	@Consumes(MediaType.APPLICATION_JSON)
 	public String login(User user) {
 		
-		
-
 		if (data.getRegistered().contains(user)) {
 			if (!data.getLoggedIn().contains(user))
+				user.setHost(networkData.getThisHost());
 				data.getLoggedIn().add(user);
 				System.out.println(user+" logged in");
 				
@@ -135,11 +131,12 @@ public class UserBean {
 	}
 	
 	@POST
-	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
 	@Path("/loggedIn")
-	public List<User> loggedInToNode()
-	{	//TODO
-		return data.getLoggedIn();
+	public String loggedIn(List<User> users) {
+		System.out.println("recieved users from master");
+		data.setLoggedIn(users);
+		return "OK";
 	}
 
 	@GET
