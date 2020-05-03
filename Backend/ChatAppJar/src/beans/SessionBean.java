@@ -85,7 +85,7 @@ public class SessionBean { // standalone.bat -c standalone-full-ha.xml to run in
 			this.currentNode = (node);
 			data.setThisHost(node);
 			System.out.println("IP Address:- " + node.getAdress() + " alias: " + node.getAlias());
-			// ovo je iz sieboga
+			
 			try {
 //				Host master=discovery();
 //				if (master!=null) {
@@ -98,7 +98,7 @@ public class SessionBean { // standalone.bat -c standalone-full-ha.xml to run in
 //					System.out.println("master created");
 //					data.setMaster(node);
 //				}
-				
+				// ovo je iz sieboga
 				File f = getFile(SessionBean.class, "", "connections.properties");
 				FileInputStream fileInput;
 				fileInput = new FileInputStream(f);
@@ -248,7 +248,7 @@ public class SessionBean { // standalone.bat -c standalone-full-ha.xml to run in
 	public String ping(String nodeAdress) {
 		 
 		
-		System.out.println("\n Pinging");
+		System.out.println("\n Pinging"+nodeAdress);
 		ResteasyClient client = new ResteasyClientBuilder().build();
 		ResteasyWebTarget target = client
 				.target("http://" + nodeAdress+ ":8080/ChatAppWar/rest/host/node");
@@ -334,10 +334,10 @@ public class SessionBean { // standalone.bat -c standalone-full-ha.xml to run in
 	}
 
 	public void delete(Host host) {
-		System.out.println("Deleting node from hosts:");
+		System.out.println("Deleting node from hosts");
 		 data.getNodes().remove(host);
 		for (int i = 0; i < data.getNodes().size(); i++) {
-			if(!data.getNodes().get(i).equals(host)) {
+			if(!(data.getNodes().get(i).getAlias()).equals(host.getAlias())) {
 				System.out.println(i + 1 + "/" + data.getNodes().size());
 				ResteasyClient client = new ResteasyClientBuilder().build();
 				ResteasyWebTarget target = client

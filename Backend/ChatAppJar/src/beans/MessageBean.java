@@ -70,27 +70,40 @@ public class MessageBean {
 
 		List<CustomMessage> temp = new ArrayList<>();
 		for (User u : data.getLoggedIn()) {
-			try {
-				if (data.getUserMessages().get(u.getUsername()) != null) {
-					temp = data.getUserMessages().get(u.getUsername());
-					temp.add(message);
-					data.getUserMessages().put(u.getUsername(), temp);
-				} else {
-					temp = new ArrayList<>();
-					temp.add(message);
-					data.getUserMessages().put(u.getUsername(), temp);
+			//rerouting
+			if (!networkData.getThisHost().getAlias().equals(u.getHost().getAlias())) {
+				ResteasyClient client1 = new ResteasyClientBuilder().build();
+				ResteasyWebTarget target1 = client1
+						.target("http://" + u.getHost().getAdress() + ":8080/ChatAppWar/rest/messages/user");
+				message.setReciever(u);
+				Response response1 = target1.request().post(Entity.entity(message, "application/json"));
+				String ret1 = response1.readEntity(String.class);
+				client1.close();
+				return Response.status(Response.Status.OK).build();
+			} else {
+				
+				try {
+					if (data.getUserMessages().get(u.getUsername()) != null) {
+						temp = data.getUserMessages().get(u.getUsername());
+						temp.add(message);
+						data.getUserMessages().put(u.getUsername(), temp);
+					} else {
+						temp = new ArrayList<>();
+						temp.add(message);
+						data.getUserMessages().put(u.getUsername(), temp);
+					}
+	
+				} catch (Exception e) {
+					e.printStackTrace();
+					return Response.status(Response.Status.BAD_REQUEST).build();
+	
 				}
-
-			} catch (Exception e) {
-				e.printStackTrace();
-				return Response.status(Response.Status.BAD_REQUEST).build();
-
+	
 			}
-
+	
+			
 		}
-
 		return Response.status(Response.Status.OK).build();
-
 	}
 
 	@POST
