@@ -1,11 +1,13 @@
+import { Host } from './host';
+
 export class User {
     username: String;
     password: String;
-    host:String;
+    host:Host;
 
    constructor(){
      this.username="user";
      this.password="pass";
-     this.host="host";
+     this.host=new Host();
    }
   }

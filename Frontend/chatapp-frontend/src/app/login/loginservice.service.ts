@@ -5,6 +5,8 @@ import { Observable } from 'rxjs';
 import { IpService } from '../ip.service';
 import { HomeComponent } from '../home/home.component';
 import { Router } from '@angular/router';
+import { Host } from '../model/host';
+import { GlobalConstants } from '../GlobalConstants';
 
 @Injectable({
   providedIn: 'root'
@@ -12,6 +14,7 @@ import { Router } from '@angular/router';
 export class LoginserviceService {
 
   loggedInUser:User
+  global:GlobalConstants=new GlobalConstants
 
   httpOptionsText = {
     headers: new HttpHeaders({
@@ -25,15 +28,14 @@ export class LoginserviceService {
       var user=new User();
       user.username=username;
       user.password=password;
-      user.host=""
+      user.host=new Host();
       var userJSON=JSON.stringify(user)
-
-    return this.http.post<User>('http://localhost:8080/ChatAppWar/rest/users/login', userJSON, this.httpOptionsText) 
+    return this.http.post<User>('http://'+this.global.apiURL+':8080/ChatAppWar/rest/users/login', userJSON, this.httpOptionsText) 
   
     }
 
   logout(): Observable<String>{
-   var res=this.http.delete<String>('http://localhost:8080/ChatAppWar/rest/users/loggedIn/'+this.loggedInUser.username,{ responseType: "text" as "json"})
+   var res=this.http.delete<String>('http://'+this.global.apiURL+':8080/ChatAppWar/rest/users/loggedIn/'+this.loggedInUser.username,{ responseType: "text" as "json"})
    this.loggedInUser=null;
    this.router.navigate(['/login'])
     return res;

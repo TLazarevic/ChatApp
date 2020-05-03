@@ -5,8 +5,8 @@ import {map} from 'rxjs/operators';
 import { Message } from '../model/message';
 import { LoginserviceService } from '../login/loginservice.service';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
+import { GlobalConstants } from '../GlobalConstants';
 
-const CHAT_URL = "ws://localhost:8080/ChatAppWar/ws/";
 
 
 
@@ -16,6 +16,8 @@ const CHAT_URL = "ws://localhost:8080/ChatAppWar/ws/";
 export class MessagehelperService {
 
   public messages: Subject<String>;
+  global:GlobalConstants=new GlobalConstants
+  CHAT_URL: string;
   //public messages: Subject<String>;
 
   // public connect(){
@@ -39,7 +41,7 @@ export class MessagehelperService {
 
 
   public connect(){
-    this.messages = <Subject<String>>this.wsService.connect(CHAT_URL+this.loginservice.loggedInUser.username).pipe(map(
+    this.messages = <Subject<String>>this.wsService.connect(this.CHAT_URL+this.loginservice.loggedInUser.username).pipe(map(
              (response: MessageEvent): String => {
              //let data = JSON.parse(response.data);
              return response.data
@@ -65,23 +67,24 @@ export class MessagehelperService {
   public send(message:Message){
 
     var messageJSON=JSON.stringify(message)
-    return this.http.post<Response>('http://localhost:8080/ChatAppWar/rest/messages/user', messageJSON, this.httpOptionsText)
+    return this.http.post<Response>('http://'+this.global.apiURL+':8080/ChatAppWar/rest/messages/user', messageJSON, this.httpOptionsText)
   }
 
   public broadcast(message:Message){
 
     var messageJSON=JSON.stringify(message)
-    return this.http.post<Response>('http://localhost:8080/ChatAppWar/rest/messages/all', messageJSON, this.httpOptionsText)
+    return this.http.post<Response>('http://'+this.global.apiURL+':8080/ChatAppWar/rest/messages/all', messageJSON, this.httpOptionsText)
   }
 
  
 
   public get(): Observable<Message[]>{
-    return this.http.get<Message[]>('http://localhost:8080/ChatAppWar/rest/messages/'+this.loginservice.loggedInUser.username, this.httpOptionsText)
+    return this.http.get<Message[]>('http://'+this.global.apiURL+':8080/ChatAppWar/rest/messages/'+this.loginservice.loggedInUser.username, this.httpOptionsText)
   }
   
   
   constructor( private wsService: MessagesserviceService,private loginservice:LoginserviceService,private http: HttpClient) {
-    
-   }
+    this.global=new GlobalConstants
+       this.CHAT_URL = "ws://"+this.global.apiURL+":8080/ChatAppWar/ws/";
   }
+}

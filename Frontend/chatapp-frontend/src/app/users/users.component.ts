@@ -32,7 +32,7 @@ export class UsersComponent implements OnInit {
     this.fetchData();
     this.interval = setInterval(() => { 
         this.fetchData(); 
-    }, 9000);
+    }, 4000);
   }
 
   fetchData(){

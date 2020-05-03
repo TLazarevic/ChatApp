@@ -22,9 +22,14 @@ export class LoginComponent implements OnInit {
 
   logIn(){
     this.loginService.login(this.username,this.password).subscribe(data=>{
-      this.loginService.loggedInUser=data
-        alert("Login sucessful!");
-        this.router.navigate(['/home']);
+      if(data==null){
+        alert("Try again")
+      }
+      else{
+        this.loginService.loggedInUser=data
+          alert("Login sucessful!");
+          this.router.navigate(['/home']);
+      }
       
       },
          (error: Error) => {
