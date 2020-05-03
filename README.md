@@ -50,4 +50,10 @@ Ukoliko dodje do problema u pretraživaču, da bi zahtevi funkcionisali potrebno
         <response-header name="Access-Control-Max-Age" header-name="Access-Control-Max-Age" header-value="1"/>
     </filters>
 ```
+<br>
+Za testiranje preDestroy dovoljno je uraditi fullPublish bez zaustavljanja projekta.
+<br>
+Za testiranje klastera potrebno je u standalone-ful-ha izmeniti adresu public interfejsa.
+<br>
+
 Autor:Tamara Lazarević
