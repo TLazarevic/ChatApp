@@ -87,6 +87,18 @@ public class SessionBean { // standalone.bat -c standalone-full-ha.xml to run in
 			System.out.println("IP Address:- " + node.getAdress() + " alias: " + node.getAlias());
 			// ovo je iz sieboga
 			try {
+//				Host master=discovery();
+//				if (master!=null) {
+//					this.masterAddress=master.getAdress();
+//					data.setMaster(master);
+//					data.getNodes().add(node);
+//					System.out.println("slave created");
+//					handshake(node);
+//				}else {
+//					System.out.println("master created");
+//					data.setMaster(node);
+//				}
+				
 				File f = getFile(SessionBean.class, "", "connections.properties");
 				FileInputStream fileInput;
 				fileInput = new FileInputStream(f);
@@ -101,17 +113,17 @@ public class SessionBean { // standalone.bat -c standalone-full-ha.xml to run in
 						System.out.println("master created");
 						data.setMaster(node);
 					} else {
-						data.getNodes().add(node);
+						//data.getNodes().add(node);
 						System.out.println("slave created");
 						handshake(node);
-//						
-//				        timer = new Timer();
-//				        timer.schedule(new TimerTask() {
-//				            @Override
-//				            public void run() { 
-//				                heartbeat();
-//				            }
-//				         }, 0, 1000 * 30 * 1); //every 30 sec
+						
+				        timer = new Timer();
+				        timer.schedule(new TimerTask() {
+				            @Override
+				            public void run() { 
+				                heartbeat();
+				            }
+				         }, 0, 1000 * 30 * 1); //every 30 sec
 				
 					}
 				} catch (IOException e) {
@@ -130,6 +142,46 @@ public class SessionBean { // standalone.bat -c standalone-full-ha.xml to run in
 	@PreDestroy
 	public void onDestroy() {
 		sendShutdownSignal(this.currentNode);
+	}
+	
+	public Host discovery() {
+		String address=this.currentNode.getAdress();
+		String[] parts=address.split("\\.");
+		System.out.println(address);
+		String addressPiece=parts[0]+"."+parts[1]+"."+parts[2];
+		System.out.println("\n Discovery initiated");
+		
+		for(int i=0;i<256;i++) {
+			if(!(addressPiece+"."+i).equals(address)) {
+				ResteasyClient client = new ResteasyClientBuilder().build();
+			try {
+				
+					System.out.println("\n Pinging "+ addressPiece+"."+i );
+					
+					ResteasyWebTarget target = client
+							.target("http://" + addressPiece+"."+i + ":8080/ChatAppWar/rest/host/discover");
+					Response response = target.request().get();
+					Host ret = response.readEntity(Host.class);
+					if(ret!=null) {
+						System.out.println("Discovered:" + ret.getAlias()+" at " +ret.getAdress());
+						return ret;
+					}
+					client.close();
+					
+				}catch(Exception e) {
+					client.close();
+				}
+			}
+		}
+		return null;
+	}
+
+	
+	@GET
+	@Path("/discover")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Host getDiscovered() {
+		return data.getMaster();
 	}
 	
 	public void sendShutdownSignal(Host node) {
@@ -161,31 +213,32 @@ public class SessionBean { // standalone.bat -c standalone-full-ha.xml to run in
 		
 		//randomly pick a node to ping
 		System.out.println(data.getNodes().size());
-		if(data.getNodes().size()>1);
-		{double x=Math.random() * data.getNodes().size();
-			Host node=data.getNodes().get((int) x);
-			if (!node.equals(data.getThisHost())) {
-			
-				try {
-						String alias=ping(node.getAdress());
-						if (alias!=node.getAlias()) {
-							throw new Exception();
-						}
-						else System.out.println("\n "+alias+" is alive");
-					}
-					catch(Exception e) {
-						try {
+		if(data.getNodes().size()>1){
+			{double x=Math.random() * data.getNodes().size();
+				Host node=data.getNodes().get((int) x);
+				if (!node.equals(data.getThisHost())) {
+				
+					try {
 							String alias=ping(node.getAdress());
 							if (alias!=node.getAlias()) {
 								throw new Exception();
 							}
 							else System.out.println("\n "+alias+" is alive");
 						}
-						catch(Exception e1) {
-							sendShutdownSignal(node);
-							System.out.println("\n "+node.getAlias()+" is not responding");
+						catch(Exception e) {
+							try {
+								String alias=ping(node.getAdress());
+								if (alias!=node.getAlias()) {
+									throw new Exception();
+								}
+								else System.out.println("\n "+alias+" is alive");
+							}
+							catch(Exception e1) {
+								sendShutdownSignal(node);
+								System.out.println("\n "+node.getAlias()+" is not responding");
+							}
 						}
-					}
+				}
 			}
 		}
 	}
@@ -216,22 +269,22 @@ public class SessionBean { // standalone.bat -c standalone-full-ha.xml to run in
 		ResteasyClient client = new ResteasyClientBuilder().build();
 		ResteasyWebTarget target = client
 				.target("http://" + this.masterAddress + ":8080/ChatAppWar/rest/host/register");
-		if ((List<Host>) target.request().post(Entity.entity(host, "application/json")).getEntity() != null)
-			data.setNodes((List<Host>) target.request().post(Entity.entity(host, "application/json")).getEntity());
+		Response response = target.request().post(Entity.entity(host, "application/json"));
 		client.close();
 		System.out.println("Node registered");
-		System.out.println("Nodes set");
 	}
 
 	public void sendInfo(Host host) {
 		// send info about new node to other nodes
 		for (Host n : data.getNodes()) {
-			ResteasyClient client = new ResteasyClientBuilder().build();
-			ResteasyWebTarget target = client.target("http://" + n.getAdress() + ":8080/ChatAppWar/rest/host/node");
-			Response response = target.request().post(Entity.entity(host, "application/json"));
-			String ret = response.readEntity(String.class);
-			System.out.println("sent new node to everyone");
-			client.close();
+			if (!host.getAlias().equals(n.getAlias())) { //dont send info to new node, he already recieved his
+				ResteasyClient client = new ResteasyClientBuilder().build();
+				ResteasyWebTarget target = client.target("http://" + n.getAdress() + ":8080/ChatAppWar/rest/host/node");
+				Response response = target.request().post(Entity.entity(host, "application/json"));
+				String ret = response.readEntity(String.class);
+				System.out.println("sent new node to everyone");
+				client.close();
+			}
 		}
 		// send loggedInUsers to new node
 		ResteasyClient client1 = new ResteasyClientBuilder().build();
@@ -279,21 +332,22 @@ public class SessionBean { // standalone.bat -c standalone-full-ha.xml to run in
 		System.out.println("Deleting node from hosts:");
 		 data.getNodes().remove(host);
 		for (int i = 0; i < data.getNodes().size(); i++) {
-			System.out.println(i + 1 + "/" + data.getNodes().size());
-			ResteasyClient client = new ResteasyClientBuilder().build();
-			ResteasyWebTarget target = client
-					.target("http://" + host.getAdress() + ":8080/ChatAppWar/rest/host/node/" + host.getAlias());
-			Response response = target.request().delete();
-			String ret = response.readEntity(String.class);
-			System.out.println("deleted node from " + host.getAlias());
+			if(!data.getNodes().get(i).equals(host)) {
+				System.out.println(i + 1 + "/" + data.getNodes().size());
+				ResteasyClient client = new ResteasyClientBuilder().build();
+				ResteasyWebTarget target = client
+						.target("http://" + data.getNodes().get(i).getAdress() + ":8080/ChatAppWar/rest/host/node/" + host.getAlias());
+				Response response = target.request().delete();
+				String ret = response.readEntity(String.class);
+				System.out.println("deleted node from " + data.getNodes().get(i).getAlias());
+			}
 		}
 	}
 
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/register")
-	public List<Host> registerNode(Host host) {
+	public String registerNode(Host host) {
 		new Thread(new Runnable() {
 			public void run() {
 
@@ -302,7 +356,7 @@ public class SessionBean { // standalone.bat -c standalone-full-ha.xml to run in
 				postNodes(host);
 			}
 		}).start();
-		return data.getNodes();
+		return "ok";
 	}
 
 	@POST
