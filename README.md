@@ -3,11 +3,15 @@ Zadatak iz predmeta Agentske tehnologije
 
 Klijent-server aplikacija za chat koje predstavlja agentsko okruženje implemetirana upotrebom JEE platforme.
 
-# # Frontend:
+## Frontend:
 <br>
-# # # Tehnologija: Angular 6
+
+### Tehnologija: Angular 6
+
 <br>
-# # # Pokretanje:
+
+### Pokretanje:
+
 <br>
 -npm start u terminalu projekta
 <br>
@@ -26,7 +30,7 @@ Klijent-server aplikacija za chat koje predstavlja agentsko okruženje implemeti
 -logout je poslednja ikonica toolbar trake
 <br>
 
-# # Backend:
+## Backend:
 <br>
 Ukoliko dodje do problema u pretraživaču, da bi zahtevi funkcionisali potrebno je izmeniti sledeće sekcije standalone fajla WildFly servera:
 ```
@@ -51,7 +55,9 @@ Ukoliko dodje do problema u pretraživaču, da bi zahtevi funkcionisali potrebno
     </filters>
 ```
 <br> 
-# # # Pokretanje klastera može se izvršiti na jedan od sledeća dva načina:
+
+###  Pokretanje klastera može se izvršiti na jedan od sledeća dva načina:
+
 <br> 
 1. Statički: Iz connection.properties fajla željenog mastera izbrisati ip adresu. U properties fajl željenih čvorova upisati ip adresu mastera
 <br>
@@ -61,7 +67,9 @@ Za testiranje preDestroy dovoljno je uraditi fullPublish bez zaustavljanja proje
 <br>
 Za testiranje klastera potrebno je u standalone-ful-ha izmeniti adresu public interfejsa.
 <br>
-# # Resursi:
+
+## Resursi:
+
 https://tutorialedge.net/typescript/angular/angular-websockets-tutorial/
 https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-discovery-hosts-providers.html?fbclid=IwAR26ylBpFOvafvyKsCwIIvhWpLmcz2F4KBfj_NH8B1Fn18uy4icfHYgFdMY#built-in-hosts-providers
 <br>
