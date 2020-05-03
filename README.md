@@ -64,9 +64,11 @@ Ukoliko dodje do problema u pretraživaču, da bi zahtevi funkcionisali potrebno
 <br>
 2. Dinamički discovery: Otkomentarisati kod za discovery i zakomentarisati kod za connection.properties. Dosta, dosta sporije.
 <br>
-Za testiranje preDestroy dovoljno je uraditi fullPublish bez zaustavljanja projekta.
+Za testiranje preDestroy dovoljno je uraditi fullPublish bez zaustavljanja projekta, ili ctrl+c u terminalu
 <br>
-Za testiranje klastera potrebno je u standalone-ful-ha izmeniti adresu public interfejsa.
+Ip adresa se na frontendu postavlja u fajlu GlobalConstants.ts
+<br>
+Za testiranje handshake exceptiona dovoljno je otkomentarisati exception liniju u postNodes metodi Session Beana
 <br>
 
 ## Resursi:
