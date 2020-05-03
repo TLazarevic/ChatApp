@@ -61,5 +61,5 @@ Za testiranje preDestroy dovoljno je uraditi fullPublish bez zaustavljanja proje
 <br>
 Za testiranje klastera potrebno je u standalone-ful-ha izmeniti adresu public interfejsa.
 <br>
-
+<br>
 Autor:Tamara Lazarević
