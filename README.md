@@ -50,6 +50,12 @@ Ukoliko dodje do problema u pretraživaču, da bi zahtevi funkcionisali potrebno
         <response-header name="Access-Control-Max-Age" header-name="Access-Control-Max-Age" header-value="1"/>
     </filters>
 ```
+<br> 
+Pokretanje klastera može se izvršiti na jedan od sledeća dva načina:
+<br> 
+1. Statički: Iz connection.properties fajla željenog mastera izbrisati ip adresu. U properties fajl željenih čvorova upisati ip adresu mastera
+<br>
+2. Dinamički discovery: Otkomentarisati kod za discovery i zakomentarisati kod za connection.properties. Dosta, dosta sporije.
 <br>
 Za testiranje preDestroy dovoljno je uraditi fullPublish bez zaustavljanja projekta.
 <br>
