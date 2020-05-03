@@ -24,6 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Singleton
 @LocalBean
+@ServerEndpoint("/ws/{clientId}")
 //salje svim klijentima 3 korak
 public class WS {
 

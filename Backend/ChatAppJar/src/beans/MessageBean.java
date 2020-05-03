@@ -103,6 +103,7 @@ public class MessageBean {
 		Host recieverHost = reciever.getHost();
 
 		// reroute the message to the recievers node
+		System.out.println(networkData.getThisHost().getAlias()+recieverHost.getAlias());
 		if (!networkData.getThisHost().getAlias().equals(recieverHost.getAlias())) {
 			ResteasyClient client1 = new ResteasyClientBuilder().build();
 			ResteasyWebTarget target1 = client1
@@ -118,11 +119,29 @@ public class MessageBean {
 					List<CustomMessage> temp = data.getUserMessages().get(message.getReciever().getUsername());
 					temp.add(message);
 					data.getUserMessages().put(message.getReciever().getUsername(), temp);
+					if (data.getUserMessages().get(message.getAuthor().getUsername()) != null) {
+						List<CustomMessage> temp2 = data.getUserMessages().get(message.getAuthor().getUsername());
+						temp2.add(message);
+						data.getUserMessages().put(message.getAuthor().getUsername(), temp2);
+					}else {
+						List<CustomMessage> temp2 = new ArrayList<>();
+						temp2.add(message);
+						data.getUserMessages().put(message.getAuthor().getUsername(), temp2);
+					}
 
 				} else {
 					List<CustomMessage> temp = new ArrayList<>();
 					temp.add(message);
 					data.getUserMessages().put(message.getReciever().getUsername(), temp);
+					if (data.getUserMessages().get(message.getAuthor().getUsername()) != null) {
+						List<CustomMessage> temp2 = data.getUserMessages().get(message.getAuthor().getUsername());
+						temp2.add(message);
+						data.getUserMessages().put(message.getAuthor().getUsername(), temp2);
+					}else {
+						List<CustomMessage> temp2 = new ArrayList<>();
+						temp2.add(message);
+						data.getUserMessages().put(message.getAuthor().getUsername(), temp2);
+					}
 
 				}
 

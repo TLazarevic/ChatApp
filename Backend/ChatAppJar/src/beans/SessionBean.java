@@ -104,14 +104,14 @@ public class SessionBean { // standalone.bat -c standalone-full-ha.xml to run in
 						data.getNodes().add(node);
 						System.out.println("slave created");
 						handshake(node);
-						
-				        timer = new Timer();
-				        timer.schedule(new TimerTask() {
-				            @Override
-				            public void run() { 
-				                heartbeat();
-				            }
-				         }, 0, 1000 * 30 * 1); //every 30 sec
+//						
+//				        timer = new Timer();
+//				        timer.schedule(new TimerTask() {
+//				            @Override
+//				            public void run() { 
+//				                heartbeat();
+//				            }
+//				         }, 0, 1000 * 30 * 1); //every 30 sec
 				
 					}
 				} catch (IOException e) {
@@ -160,30 +160,33 @@ public class SessionBean { // standalone.bat -c standalone-full-ha.xml to run in
 	public void heartbeat() {
 		
 		//randomly pick a node to ping
-		double x=Math.random() * data.getNodes().size();
-		Host node=data.getNodes().get((int) x);
-		if (!node.equals(data.getThisHost())) {
-		
-			try {
-					String alias=ping(node.getAdress());
-					if (alias!=node.getAlias()) {
-						throw new Exception();
-					}
-					else System.out.println("\n "+alias+" is alive");
-				}
-				catch(Exception e) {
-					try {
+		System.out.println(data.getNodes().size());
+		if(data.getNodes().size()>1);
+		{double x=Math.random() * data.getNodes().size();
+			Host node=data.getNodes().get((int) x);
+			if (!node.equals(data.getThisHost())) {
+			
+				try {
 						String alias=ping(node.getAdress());
 						if (alias!=node.getAlias()) {
 							throw new Exception();
 						}
 						else System.out.println("\n "+alias+" is alive");
 					}
-					catch(Exception e1) {
-						sendShutdownSignal(node);
-						System.out.println("\n "+node.getAlias()+" is not responding");
+					catch(Exception e) {
+						try {
+							String alias=ping(node.getAdress());
+							if (alias!=node.getAlias()) {
+								throw new Exception();
+							}
+							else System.out.println("\n "+alias+" is alive");
+						}
+						catch(Exception e1) {
+							sendShutdownSignal(node);
+							System.out.println("\n "+node.getAlias()+" is not responding");
+						}
 					}
-				}
+			}
 		}
 	}
 	
