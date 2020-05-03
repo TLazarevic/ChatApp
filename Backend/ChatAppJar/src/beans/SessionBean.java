@@ -212,7 +212,7 @@ public class SessionBean { // standalone.bat -c standalone-full-ha.xml to run in
 	public void heartbeat() {
 		
 		//randomly pick a node to ping
-		System.out.println(data.getNodes().size());
+		System.out.println("heart.beat");
 		if(data.getNodes().size()>1){
 			{double x=Math.random() * data.getNodes().size();
 				Host node=data.getNodes().get((int) x);
@@ -240,6 +240,8 @@ public class SessionBean { // standalone.bat -c standalone-full-ha.xml to run in
 						}
 				}
 			}
+		}else {
+			System.out.println("No nodes to ping");
 		}
 	}
 	
@@ -271,7 +273,10 @@ public class SessionBean { // standalone.bat -c standalone-full-ha.xml to run in
 				.target("http://" + this.masterAddress + ":8080/ChatAppWar/rest/host/register");
 		Response response = target.request().post(Entity.entity(host, "application/json"));
 		client.close();
-		System.out.println("Node registered");
+		if (response.equals("ok"))
+			System.out.println("Node registered");
+		else
+			System.out.println("Node with same alias already exists");
 	}
 
 	public void sendInfo(Host host) {
@@ -348,6 +353,10 @@ public class SessionBean { // standalone.bat -c standalone-full-ha.xml to run in
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Path("/register")
 	public String registerNode(Host host) {
+		for (Host h: data.getNodes()) {
+			if (h.getAlias().equals(host.getAlias()))
+				return "Cancel";
+		}
 		new Thread(new Runnable() {
 			public void run() {
 
