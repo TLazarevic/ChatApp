@@ -33,6 +33,7 @@ Klijent-server aplikacija za chat koje predstavlja agentsko okruženje implemeti
 ## Backend:
 <br>
 Ukoliko dodje do problema u pretraživaču, da bi zahtevi funkcionisali potrebno je izmeniti sledeće sekcije standalone fajla WildFly servera:
+
 ```
  <host name="default-host" alias="localhost">
             <location name="/" handler="welcome-content"/>
