@@ -3,6 +3,10 @@ Zadatak iz predmeta Agentske tehnologije
 
 Klijent-server aplikacija za chat koje predstavlja agentsko okruženje implemetirana upotrebom JEE platforme.
 
+![bee img](https://github.com/TLazarevic/ChatApp/blob/master/Frontend/chatapp-frontend/src/assets/images/bee.png?raw=true)
+
+  Icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon"> www.flaticon.com</a>
+
 ## Frontend:
 <br>
 
